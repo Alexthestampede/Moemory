@@ -1,0 +1,289 @@
+/* Memory Match — mobile-first */
+
+:root {
+  --bg: #101828;
+  --panel: #1c2740;
+  --card-face: #f4f7ff;
+  --ink: #e8eefc;
+  --ink-dim: #93a2c0;
+  --accent: #ffc94d;
+  --accent-ink: #1a1a1a;
+  --good: #4ade80;
+  --bad: #f87171;
+  --radius: 14px;
+  --flip-ms: 380ms;
+  --mismatch-ms: 700ms;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: radial-gradient(1200px 800px at 50% -10%, #1d2c4e 0%, var(--bg) 55%) fixed;
+  color: var(--ink);
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding:
+    calc(8px + env(safe-area-inset-top))
+    calc(10px + env(safe-area-inset-right))
+    calc(10px + env(safe-area-inset-bottom))
+    calc(10px + env(safe-area-inset-left));
+  gap: 10px;
+}
+
+/* ---------- HUD ---------- */
+
+#hud {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 4px;
+}
+
+#title {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+#stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+#mute {
+  background: none;
+  border: 0;
+  color: var(--ink-dim);
+  font-size: 18px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+#mute[aria-pressed="true"] { color: var(--ink); }
+
+/* ---------- Board ---------- */
+
+#board {
+  --cols: 4;
+  flex: 1;
+  width: 100%;
+  max-width: min(92vw, 92dvh - 120px, 720px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: clamp(6px, 1.6vw, 12px);
+  align-content: center;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  perspective: 700px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-ms) cubic-bezier(0.2, 0.7, 0.3, 1.1);
+  border-radius: var(--radius);
+}
+
+.card:enabled:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.face-back {
+  background:
+    radial-gradient(120% 120% at 30% 20%, #3a4f7f 0%, #273655 60%, #1d2946 100%);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+.face-back::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  border: 3px dashed rgba(255, 255, 255, 0.22);
+}
+
+.face-front {
+  background: var(--card-face);
+  transform: rotateY(180deg);
+}
+
+.card.is-up .card-inner { transform: rotateY(180deg); }
+
+.card.is-matched { cursor: default; }
+.card.is-matched .card-inner { animation: pop 300ms ease; }
+.card.is-matched .face-front { box-shadow: 0 0 0 3px var(--good) inset; }
+
+.card.is-wrong .card-inner { animation: shake 300ms ease; }
+.card.is-wrong .face-front { box-shadow: 0 0 0 3px var(--bad) inset; }
+
+.card:enabled:hover .card-inner { transform: rotateY(0deg) translateY(-3px); }
+.card.is-up:enabled:hover .card-inner,
+.card.is-matched:hover .card-inner { transform: rotateY(180deg); }
+
+@keyframes pop {
+  40% { transform: rotateY(180deg) scale(1.07); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+@keyframes shake {
+  20%, 60% { transform: rotateY(180deg) translateX(-4px); }
+  40%, 80% { transform: rotateY(180deg) translateX(4px); }
+  100% { transform: rotateY(180deg) translateX(0); }
+}
+
+/* Matched cards fade so the matched set reads at a glance */
+.card.is-matched .face img { filter: saturate(0.9); }
+
+/* ---------- Controls ---------- */
+
+#controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+
+.size, #restart {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 2px solid #33405e;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.size[aria-checked="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+#restart { margin-left: 6px; }
+
+button { -webkit-tap-highlight-color: transparent; }
+button:active:not(#mute) { transform: translateY(1px); }
+
+/* ---------- Win dialog ---------- */
+
+dialog {
+  margin: auto;
+  border: 0;
+  border-radius: 18px;
+  background: var(--panel);
+  color: var(--ink);
+  padding: 22px 26px;
+  text-align: center;
+  max-width: min(88vw, 340px);
+}
+
+dialog::backdrop {
+  background: rgba(6, 10, 20, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+#win-dialog h2 { margin: 0 0 6px; font-size: 24px; }
+#win-dialog p { margin: 4px 0; color: var(--ink-dim); }
+#win-dialog #win-best { font-variant-numeric: tabular-nums; }
+
+#win-dialog button {
+  margin-top: 10px;
+  font: inherit;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+
+/* ---------- Install prompt ---------- */
+
+#install {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  font: inherit;
+  font-size: 14px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 20px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+@media (min-width: 700px) {
+  #app {
+    padding:
+      max(14px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      max(20px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
+  #board { max-width: min(86vw, 86dvh - 140px, 720px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-inner, .card.is-matched .card-inner, .card.is-wrong .card-inner {
+    transition-duration: 1ms;
+    animation-duration: 1ms;
+  }
+}
