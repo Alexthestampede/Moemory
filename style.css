@@ -84,9 +84,15 @@ body {
 
 #board {
   --cols: 4;
-  flex: 1;
-  width: 100%;
-  max-width: min(92vw, 92dvh - 120px, 720px);
+  /* Fit inside remaining viewport height: rows = cols for square grids,
+     so board height ~= width + gaps. Cap all contributors. */
+  width: min(
+    100%,
+    calc((100dvh - 190px - 3 * clamp(6px, 1.6vw, 12px)) * var(--cols) / (var(--cols) + 1)),
+    92vw,
+    calc(4 / 3 * (92dvh - 190px - 3 * clamp(6px, 1.6vw, 12px))),
+    720px
+  );
   margin-inline: auto;
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);

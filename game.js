@@ -53,14 +53,15 @@ async function loadLibrary() {
   }
   if (declared.length) return declared;
 
-  // Auto-list faces/face-01..face-64, probing common extensions per index.
-  const found = [];
-  for (let i = 1; i <= 64; i++) {
+  // Auto-list faces/face-01..face-64 with ONE probe per index.
+  // Parallel instead of serial: 64 requests in flight, ~1 round-trip deep.
+  const indexes = Array.from({ length: 64 }, (_, i) => i + 1);
+  const settled = await Promise.all(indexes.map(async (i) => {
     const num = String(i).padStart(2, "0");
     const hit = await firstExisting(FACE_EXTS.map((ext) => `faces/face-${num}.${ext}`));
-    if (hit) found.push({ file: hit, caption: `Face ${i}` });
-  }
-  return found;
+    return hit && { file: hit, caption: `Face ${i}` };
+  }));
+  return settled.filter(Boolean);
 }
 
 async function firstExisting(urls) {
@@ -119,6 +120,8 @@ function buildDeck() {
   boardEl.replaceChildren();
 
   deck = cards.map((card, idx) => {
+    const entry = { ...card, el: null, state: "down" };
+
     const el = document.createElement("button");
     el.className = "card";
     el.type = "button";
@@ -132,9 +135,10 @@ function buildDeck() {
 
     el.appendChild(inner);
     boardEl.appendChild(el);
-    el.addEventListener("click", () => onFlip(card));
+    el.addEventListener("click", () => onFlip(entry));
+    entry.el = el;
 
-    return { ...card, el, state: "down" };
+    return entry;
   });
 }
 
