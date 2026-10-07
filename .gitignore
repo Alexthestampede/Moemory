@@ -1,3 +1,2 @@
-# Generated placeholder icons; tools/make-icons.sh can regenerate them
-# Real artwork faces will land here later
-icons/*.png
+# Regenerate with tools/make-icons.sh if removed
+# Do NOT gitignore: icons are required PWA assets (lesson learned)
