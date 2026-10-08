@@ -1,2 +1,5 @@
-# Regenerate with tools/make-icons.sh if removed
-# Do NOT gitignore: icons are required PWA assets (lesson learned)
+# Recover from accidental over-ignore: faces/tools/icons are REQUIRED
+# tracked assets (ignoring them caused a silent icon 404 once before).
+temp/
+node_modules/
+.DS_Store

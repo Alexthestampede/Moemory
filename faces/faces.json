@@ -1,0 +1,40 @@
+{
+  "faces": [
+    {
+      "file": "face-01.webp",
+      "caption": "girl with an icecream"
+    },
+    {
+      "file": "face-02.webp",
+      "caption": "girl with a cat on her head"
+    },
+    {
+      "file": "face-03.webp",
+      "caption": "girl riding a huge dog"
+    },
+    {
+      "file": "face-04.webp",
+      "caption": "surprised girl caught mid bite of a large pizza slice"
+    },
+    {
+      "file": "face-05.webp",
+      "caption": "magical girl posing"
+    },
+    {
+      "file": "face-06.webp",
+      "caption": "zombie girl putting on makeup"
+    },
+    {
+      "file": "face-07.webp",
+      "caption": "idol singing on stage"
+    },
+    {
+      "file": "face-08.webp",
+      "caption": "gunslinger girl in a western setting"
+    },
+    {
+      "file": "face-09.webp",
+      "caption": "astronaut girl on the moon with a spaceship in the backgroun"
+    }
+  ]
+}
