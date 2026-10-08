@@ -362,6 +362,8 @@ function markGridButtons(key) {
 
 function setGrid(key) {
   if (!GRIDS[key]) return;
+  const spec = GRIDS[key];
+  if (library.length < spec.pairs) return; // can't fill this board yet
   gridKey = key;
   localStorage.setItem("mm.grid", key);
   markGridButtons(key);
@@ -378,6 +380,23 @@ function restart() {
   stopTimer();
   buildDeck();
   startTimer();
+}
+
+/* Disable grid sizes the current face library can't fill. */
+function refreshSizeAvailability() {
+  const have = library.length;
+  for (const btn of sizesEl.querySelectorAll(".size")) {
+    const spec = GRIDS[btn.dataset.grid];
+    const short = spec && have < spec.pairs;
+    btn.disabled = Boolean(short);
+    if (spec) {
+      btn.title = short
+        ? `Needs ${spec.pairs} faces (library has ${have})`
+        : "";
+      if (short) btn.textContent = btn.dataset.grid.replace("x", "\u00d7") + ` (${have}/${spec.pairs})`;
+      else btn.textContent = btn.dataset.grid.replace("x", "\u00d7");
+    }
+  }
 }
 
 muteBtn.addEventListener("click", () => {
@@ -404,12 +423,22 @@ async function boot() {
   const initial = (paramGrid && GRIDS[paramGrid] && paramGrid) ||
     localStorage.getItem("mm.grid") || "4x4";
   gridKey = GRIDS[initial] ? initial : "4x4";
-  markGridButtons(gridKey);
 
   library = await loadLibrary();
-  if (library.length < GRIDS["4x4"].pairs) {
-    library = fallbackLibrary(Math.max(GRIDS["4x4"].pairs, library.length));
+  if (library.length < GRIDS[gridKey].pairs) {
+    // requested/remembered grid has outgrown the library — drop to the
+    // largest grid we can actually fill
+    const fillable = Object.keys(GRIDS)
+      .filter((k) => library.length >= GRIDS[k].pairs)
+      .sort((a, b) => GRIDS[b].pairs - GRIDS[a].pairs);
+    gridKey = fillable[0] ?? "4x4";
+    if (library.length < GRIDS[gridKey].pairs) {
+      library = fallbackLibrary(GRIDS["4x4"].pairs);
+      gridKey = "4x4";
+    }
   }
+  markGridButtons(gridKey);
+  refreshSizeAvailability();
   restart();
 }
 
