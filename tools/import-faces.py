@@ -66,6 +66,8 @@ def main() -> None:
     next_index = max_index + 1
     imported = 0
     for path in paths:
+        if "icon" in os.path.basename(path).lower():
+            continue  # launcher icons go through tools/make-icons.sh, not the face library
         img = Image.open(path).convert("RGB")
         prompt = img.info.get("prompt", "")
         subject = subject_from_prompt(prompt) if prompt else ""
