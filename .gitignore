@@ -2,4 +2,4 @@
 # tracked assets (ignoring them caused a silent icon 404 once before).
 temp/
 node_modules/
-.DS_Store
+.DS_Store__pycache__/

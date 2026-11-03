@@ -16,8 +16,9 @@ Open http://localhost:8080 — installability (and the service worker) require `
 index.html              shell + install prompt logic
 style.css               mobile-first layout, card 3D flips, safe areas
 game.js                 face library, sampling, board, matching, scoring
-sw.js                   cache-first service worker (offline)
+sw.js                   cache-first service worker (offline; precaches fonts + all faces)
 manifest.json           PWA manifest + shortcuts
+fonts/                  self-hosted woff2: Atkinson Hyperlegible 700 (UI), Nunito 800 (title)
 icons/                  icon-192.png, icon-512.png, icon-maskable-512.png, apple-touch-icon.png
 faces/                  card faces — drop generated art here
 faces/faces.json        library manifest; cards auto-listed if omitted

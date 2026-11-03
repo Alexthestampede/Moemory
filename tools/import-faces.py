@@ -100,8 +100,25 @@ def main() -> None:
     with open(manifest_path, "w") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
+    if imported:
+        bump_sw_version()
+
     total = len(manifest["faces"])
     print(f"imported {imported}, library now {total} faces — commit faces/ when happy")
+
+
+def bump_sw_version() -> None:
+    """New faces must re-trigger the service worker's precache install."""
+    sw_path = os.path.join(ROOT, "sw.js")
+    with open(sw_path) as f:
+        src = f.read()
+    m = re.search(r'const VERSION = "v(\d+)";', src)
+    if not m:
+        return
+    src = src.replace(m.group(0), f'const VERSION = "v{int(m.group(1)) + 1}";')
+    with open(sw_path, "w") as f:
+        f.write(src)
+    print(f"  sw.js VERSION bumped to v{int(m.group(1)) + 1}")
 
 
 if __name__ == "__main__":

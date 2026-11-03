@@ -1,5 +1,21 @@
 /* Memory Match — mobile-first */
 
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/atkinson-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fonts/nunito-800.woff2") format("woff2");
+}
+
 :root {
   --bg: #101828;
   --panel: #1c2740;
@@ -25,7 +41,7 @@ html, body {
 body {
   background: radial-gradient(1200px 800px at 50% -10%, #1d2c4e 0%, var(--bg) 55%) fixed;
   color: var(--ink);
-  font-family: "Nunito", system-ui, sans-serif;
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
   font-weight: 700;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
@@ -55,6 +71,7 @@ body {
 }
 
 #title {
+  font-family: "Nunito", "Atkinson Hyperlegible", system-ui, sans-serif;
   font-size: clamp(20px, 5vw, 28px);
   font-weight: 800;
   margin: 0;
